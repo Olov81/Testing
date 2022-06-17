@@ -13,24 +13,27 @@ TestSuite * TestSuite::Instance()
 
 bool TestSuite::RunTests()
 {
-	try
+	for (auto& testFunction : _testFunctions)
 	{
-		for (auto& testFunction : _testFunctions)
+		try
 		{
+
 			std::cout << "Running test " << testFunction._name << "... ";
 			testFunction._function();
 			std::cout << "passed!" << std::endl;
 		}
+		catch(const std::exception& e)
+		{
+			std::cout
+			<< std::endl
+			<< "Fail:" << std::endl
+			<< "\t" << e.what() << std::endl;
+		}
+		catch (...)
+		{
+			return false;
+		}
 	}
-	catch(const std::exception& e)
-	{
-		std::cout << std::endl << e.what() << std::endl;
-	}
-	catch (...)
-	{
-		return false;
-	}
-
 	return true;
 }
 
