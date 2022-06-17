@@ -22,6 +22,10 @@ bool TestSuite::RunTests()
 			std::cout << "passed!" << std::endl;
 		}
 	}
+	catch(const std::exception& e)
+	{
+		std::cout << std::endl << e.what() << std::endl;
+	}
 	catch (...)
 	{
 		return false;
