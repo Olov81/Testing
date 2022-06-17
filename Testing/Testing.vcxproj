@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Assert.h" />
+    <ClInclude Include="Include\Test.h" />
+    <ClInclude Include="Include\FluentAssertions.h" />
     <ClInclude Include="Include\TestSuite.h" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +105,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

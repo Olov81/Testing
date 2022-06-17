@@ -27,7 +27,7 @@ bool TestSuite::RunTests()
 			std::cout
 			<< std::endl
 			<< "Fail:" << std::endl
-			<< "\t" << e.what() << std::endl;
+			<< e.what() << std::endl;
 		}
 		catch (...)
 		{

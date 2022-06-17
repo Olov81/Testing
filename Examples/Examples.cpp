@@ -1,4 +1,5 @@
-#include "Assert.h"
+#include "FluentAssertions.h"
+#include "Test.h"
 #include "TestSuite.h"
 
 int main()
@@ -13,5 +14,5 @@ TEST(Apa)
 
 TEST(Bepa)
 {
-    throw std::exception("Det blev ett annat fel");
+    Assert(5).equals(6);
 }
