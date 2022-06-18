@@ -10,7 +10,7 @@ public:
 
 	typedef void(*TestFunction)();
 
-	bool RunTests();
+	bool RunTests() const;
 
 	void AddTest(TestFunction testFunction, const char* testName);
 

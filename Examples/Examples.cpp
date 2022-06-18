@@ -7,6 +7,15 @@ int main()
     return TestSuite::Instance()->RunTests() ? 0 : -1;
 }
 
+TEST(Success)
+{
+}
+
+TEST(UnknownError)
+{
+    throw 1;
+}
+
 TEST(Exceptions)
 {
     throw std::exception("Det blev fel");

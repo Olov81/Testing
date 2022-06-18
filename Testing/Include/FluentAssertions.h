@@ -6,7 +6,7 @@
 #include <functional>
 #include <sstream>
 
-template<typename T1, typename T2>
+template <typename T1, typename T2>
 concept Equatable = requires(T1 a, T2 b)
 {
     { a == b } -> std::convertible_to<bool>;
@@ -17,8 +17,8 @@ class AssertionContext
 {
 public:
 
-    explicit AssertionContext(const TActual& actual, long line, const char* file, const char* actualName)
-    : _actual(actual)
+    explicit AssertionContext(TActual actual, long line, const char* file, const char* actualName)
+    : _actual(std::move(actual))
     , _line(line)
     , _file(file)
     , _actualName(actualName)
