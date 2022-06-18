@@ -16,21 +16,33 @@ template<class TActual>
 class AssertionContext
 {
 public:
-    
+
     explicit AssertionContext(const TActual& actual, long line, const char* file, const char* actualName)
-        : _actual(actual)
-        , _line(line)
-        , _file(file)
-        , _actualName(actualName)
+    : _actual(actual)
+    , _line(line)
+    , _file(file)
+    , _actualName(actualName)
     {
     }
 
-    template<class TExpected> requires Equatable<TActual, TExpected>
-    void equals(const TExpected& expected)
+    const TActual& actual() const
     {
-        assertThat(
-            _actual == expected,
-            [&](auto& s){ s << "Expected " << _actualName << " to be " << expected << ", but was " << _actual;});
+        return _actual;
+    }
+
+    const char* actualName() const
+    {
+        return _actualName;
+    }
+
+    long line() const
+    {
+        return _line;
+    }
+
+    const char* file() const
+    {
+        return _file;
     }
     
 private:
@@ -39,55 +51,93 @@ private:
     long _line;
     const char* _file;
     const char* _actualName;
+};
+
+template<class TActual>
+class AssertionsBase
+{
+public:
     
-    void assertThat(bool condition, const std::function<void(std::stringstream&)>& appendMessage)
+    explicit AssertionsBase(const AssertionContext<TActual>& context)
+        : _context(context)
+    {
+    }
+
+    template<class TExpected> requires Equatable<TActual, TExpected>
+    void equals(const TExpected& expected)
+    {
+        assert(
+            actual() == expected,
+            [&](auto& s){ s << "Expected " << actualName() << " to be " << expected << ", but was " << actual();});
+    }
+    
+protected:
+
+    const TActual& actual() const
+    {
+        return _context.actual();
+    }
+
+    const char* actualName() const
+    {
+        return _context.actualName();
+    }
+    
+    void assert(bool condition, const std::function<void(std::stringstream&)>& appendMessage) const
     {
         if(!condition)
         {
             std::stringstream s;
-            s << _file << "(" << _line << "):" << std::endl;
+            s << _context.file() << "(" << _context.line() << "):" << std::endl;
             appendMessage(s);
             throw std::exception(s.str().c_str());
         }
     }
+    
+private:
+
+    AssertionContext<TActual> _context;
 };
 
-// template<class TActual>
-// class AssertionContext : public AssertionContextBase<TActual> 
-// {
-// public:
-//     
-//     explicit AssertionContext(const TActual& actual)
-//         : AssertionContextBase(actual)
-//     {
-//     }
-//     
-// };
-//
-// template<>
-// class AssertionContext<bool> : public AssertionContextBase<bool>
-// {
-// public:
-//     
-//     explicit AssertionContext(const bool& actual)
-//         : AssertionContextBase(actual)
-//     {
-//     }
-//
-//     void IsTrue()
-//     {
-//
-//     }
-// };
+template<class TActual>
+class Assertions : public AssertionsBase<TActual> 
+{
+public:
+    
+    Assertions(const AssertionContext<TActual>& context)
+        : AssertionsBase<TActual>(context)
+    {
+        
+    }
+};
+
+template<>
+class Assertions<bool> : public AssertionsBase<bool>
+{
+public:
+    
+    Assertions(const AssertionContext<bool>& context)
+        : AssertionsBase<bool>(context)
+    {
+        
+    }
+
+    void isTrue() const
+    {
+        assert(
+            actual(),
+            [&](auto& s){ s << "Expected " << actualName() << " to be true, but was false";});
+    }
+};
 
 template<class TActual>
-AssertionContext<TActual> assert(
+Assertions<TActual> assert(
     const TActual& actual,
     long line,
     const char* file,
     const char* actualName)
 {
-    return AssertionContext<TActual>(actual, line, file, actualName);
+    return Assertions<TActual>(AssertionContext<TActual>(actual, line, file, actualName));
 }
 
 #define Assert(actual) assert(actual, __LINE__, __FILE__, #actual)
