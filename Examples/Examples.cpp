@@ -33,7 +33,7 @@ class Assertions<MyClass> : public AssertionsBase<MyClass>
 public:
 
     Assertions(const AssertionContext<MyClass>& context)
-        :AssertionsBase<MyClass>(context)
+        : AssertionsBase<MyClass>(context)
     {
     }
     
@@ -88,7 +88,7 @@ TEST(greater_than)
 
 TEST(custom_class)
 {
-    MyClass x("Orvar");
+    const MyClass x("Orvar");
 
     ASSERT_THAT(x).hasName("Bosse");
 }

@@ -77,22 +77,6 @@ public:
     {
     }
 
-    template<class TExpected> requires Equatable<TActual, TExpected>
-    void equals(const TExpected& expected)
-    {
-        assert(
-            actual() == expected,
-            [&](auto& s){ s << "Expected " << actualName() << " to be " << expected << ", but was " << actual();});
-    }
-
-    template<class TExpected> requires Greater<TActual, TExpected>
-    void isGreaterThan(const TExpected& expected)
-    {
-        assert(
-            actual() > expected,
-            [&](auto& s){ s << "Expected " << actualName() << " to be greater than " << expected << ", but was " << actual();});
-    }
-    
 protected:
 
     const TActual& actual() const
@@ -119,12 +103,46 @@ private:
 };
 
 template<class TActual>
-class Assertions : public AssertionsBase<TActual> 
+class GeneralAssertions : public AssertionsBase<TActual>
+{
+protected:
+    
+    using AssertionsBase<TActual>::actual;
+    using AssertionsBase<TActual>::actualName;
+    using AssertionsBase<TActual>::assert;
+    
+public:
+
+    explicit GeneralAssertions(const AssertionContext<TActual>& context)
+    : AssertionsBase<TActual>(context)
+    {
+    }
+
+    
+    template<class TExpected> requires Equatable<TActual, TExpected>
+    void equals(const TExpected& expected)
+    {
+        assert(
+            actual() == expected,
+            [&](auto& s){ s << "Expected " << actualName() << " to be " << expected << ", but was " << actual();});
+    }
+
+    template<class TExpected> requires Greater<TActual, TExpected>
+    void isGreaterThan(const TExpected& expected)
+    {
+        assert(
+            actual() > expected,
+            [&](auto& s){ s << "Expected " << actualName() << " to be greater than " << expected << ", but was " << actual();});
+    }
+};
+
+template<class TActual>
+class Assertions : public GeneralAssertions<TActual> 
 {
 public:
     
     Assertions(const AssertionContext<TActual>& context)
-        : AssertionsBase<TActual>(context)
+        : GeneralAssertions<TActual>(context)
     {
         
     }
