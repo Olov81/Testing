@@ -7,29 +7,42 @@ int main()
     return TestSuite::Instance()->RunTests() ? 0 : -1;
 }
 
-TEST(Success)
+TEST(success)
 {
 }
 
-TEST(UnknownError)
+TEST(unknown_error)
 {
     throw 1;
 }
 
-TEST(Exceptions)
+TEST(exceptions)
 {
     throw std::exception("Det blev fel");
 }
 
-TEST(Number)
+TEST(general_assertion)
 {
-    Assert(5).equals(6);
+    constexpr auto value = 5.0;
+    ASSERT_THAT(value == 6.0);
 }
 
-TEST(Strings)
+TEST(number)
 {
-    std::string v1 = "apa";
-    std::string v2 = "bulle";
+    ASSERT_THAT(5).equals(6);
+}
 
-    Assert(v1).equals(v2);
+TEST(strings)
+{
+    const std::string v1 = "apa";
+    const std::string v2 = "bulle";
+
+    ASSERT_THAT(v1).equals(v2);
+}
+
+TEST(greater_than)
+{
+    constexpr double number = 0.5;
+
+    ASSERT_THAT(number).isGreaterThan(10);
 }

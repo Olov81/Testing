@@ -35,6 +35,14 @@ std::ostream& operator<<(std::ostream& stream, std::chrono::duration<long long, 
 	return stream << ms.count() << "ms";
 }
 
+void printFailMessage(const char* message)
+{
+	std::cout
+	<< "failed:" << std::endl
+	<<  message << std::endl
+	<< "---------------";
+}
+
 bool TestSuite::RunTests() const
 {
 	int passed = 0;
@@ -53,14 +61,12 @@ bool TestSuite::RunTests() const
 		}
 		catch(const std::exception& e)
 		{
-			std::cout
-			<< std::endl
-			<< "Fail: " << e.what();
+			printFailMessage(e.what());
 			++failed;
 		}
 		catch (...)
 		{
-			std::cout << std::endl << "Fail: Unknown error";
+			printFailMessage("Unknown error");
 			++failed;
 		}
 

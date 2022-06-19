@@ -12,6 +12,12 @@ concept Equatable = requires(T1 a, T2 b)
     { a == b } -> std::convertible_to<bool>;
 };
 
+template<typename T1, typename T2>
+concept Greater = requires(T1 a, T2 b)
+{
+    { a > b } -> std::convertible_to<bool>;    
+};
+
 template<class TActual>
 class AssertionContext
 {
@@ -53,6 +59,15 @@ private:
     const char* _actualName;
 };
 
+inline void fail(long line, const char* file,  const std::function<void(std::stringstream&)>& appendMessage)
+{
+    std::stringstream s;
+    s << std::endl
+      << file << "(" << line << "):" << std::endl;
+    appendMessage(s);
+    throw std::exception(s.str().c_str());
+}
+
 template<class TActual>
 class AssertionsBase
 {
@@ -69,6 +84,14 @@ public:
         assert(
             actual() == expected,
             [&](auto& s){ s << "Expected " << actualName() << " to be " << expected << ", but was " << actual();});
+    }
+
+    template<class TExpected> requires Greater<TActual, TExpected>
+    void isGreaterThan(const TExpected& expected)
+    {
+        assert(
+            actual() > expected,
+            [&](auto& s){ s << "Expected " << actualName() << " to be greater than " << expected << ", but was " << actual();});
     }
     
 protected:
@@ -87,10 +110,7 @@ protected:
     {
         if(!condition)
         {
-            std::stringstream s;
-            s << _context.file() << "(" << _context.line() << "):" << std::endl;
-            appendMessage(s);
-            throw std::exception(s.str().c_str());
+            fail(_context.line(), _context.file(), appendMessage);
         }
     }
     
@@ -111,27 +131,8 @@ public:
     }
 };
 
-template<>
-class Assertions<bool> : public AssertionsBase<bool>
-{
-public:
-    
-    Assertions(const AssertionContext<bool>& context)
-        : AssertionsBase<bool>(context)
-    {
-        
-    }
-
-    void isTrue() const
-    {
-        assert(
-            actual(),
-            [&](auto& s){ s << "Expected " << actualName() << " to be true, but was false";});
-    }
-};
-
 template<class TActual>
-Assertions<TActual> assert(
+Assertions<TActual> assertThat(
     const TActual& actual,
     long line,
     const char* file,
@@ -140,4 +141,16 @@ Assertions<TActual> assert(
     return Assertions<TActual>(AssertionContext<TActual>(actual, line, file, actualName));
 }
 
-#define Assert(actual) assert(actual, __LINE__, __FILE__, #actual)
+inline void assertThat(
+    bool assertion,
+    long line,
+    const char* file,
+    const char* expressionString)
+{
+    if(!assertion)
+    {
+        fail(line, file, [&](auto& s){s << "Expected " << expressionString;});
+    }
+}
+
+#define ASSERT_THAT(actual) assertThat(actual, __LINE__, __FILE__, #actual)
