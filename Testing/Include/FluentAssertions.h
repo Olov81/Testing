@@ -18,6 +18,12 @@ concept Greater = requires(T1 a, T2 b)
     { a > b } -> std::convertible_to<bool>;    
 };
 
+template<typename T1, typename T2>
+concept Subtractable = requires(T1 a, T2 b)
+{
+    { a - b } -> std::convertible_to<double>;    
+};
+
 template<class TActual>
 class AssertionContext
 {
@@ -100,7 +106,7 @@ protected:
     {
         return assert(
             condition,
-            [&](auto& s){s << "Expected " << actualName() << " to " << " " << requirement << " " << expected << ", but was " << actual;});    
+            [&](auto& s){s << "Expected " << actualName() << " to " << requirement << " " << expected << ", but was " << actual;});    
     }
     
     void assert(bool condition, const std::function<void(std::stringstream&)>& appendMessage) const
@@ -131,18 +137,17 @@ public:
     : AssertionsBase<TActual>(context)
     {
     }
-
     
     template<class TExpected> requires Equatable<TActual, TExpected>
     void equals(const TExpected& expected)
     {
-        assert(actual() == expected, expected, "to be");
+        assert(actual() == expected, expected, "be");
     }
 
     template<class TExpected> requires Greater<TActual, TExpected>
     void isGreaterThan(const TExpected& expected)
     {
-        assert(actual() > expected, expected,"to be greater than");
+        assert(actual() > expected, expected,"be greater than");
     }
 };
 
@@ -155,6 +160,29 @@ public:
         : GeneralAssertions<TActual>(context)
     {
         
+    }
+};
+
+template<std::floating_point TActual>
+class Assertions<TActual> : public GeneralAssertions<TActual>
+{
+    using AssertionsBase<TActual>::actual;
+    using AssertionsBase<TActual>::actualName;
+    using AssertionsBase<TActual>::assert;
+
+public:
+    
+    Assertions(const AssertionContext<TActual>& context)
+    : GeneralAssertions<TActual>(context)
+    {
+    }
+
+    template<class TExpected> requires Subtractable<TActual, TExpected>
+    void isCloseTo(const TExpected& expected, const double& precision)
+    {
+        assert(
+            std::abs(actual() - expected) < precision,
+            [&](auto& s){s << "Expected " << actualName() << " to differ no more than " << precision << " from " << expected << ", but was " << actual();});
     }
 };
 

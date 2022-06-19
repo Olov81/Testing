@@ -43,7 +43,7 @@ public:
             actual().Name() == expected,
             expected,
             actual().Name(),
-            "to have name");
+            "have name");
     }
 };
 
@@ -85,6 +85,12 @@ TEST(greater_than)
     constexpr double number = 0.5;
 
     ASSERT_THAT(number).isGreaterThan(10);
+}
+
+TEST(decimal_numbers)
+{
+    double value = 5.5;
+    ASSERT_THAT(value).isCloseTo(6, 1e-3);
 }
 
 TEST(custom_class)
