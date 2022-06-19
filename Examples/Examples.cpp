@@ -39,10 +39,11 @@ public:
     
     void hasName(const char* expected) const
     {
-        auto actualValue = actual().Name();
         assert(
-            actualValue == expected,
-            [&](auto& s){s << "Expected " << actualName() << " to have name " << expected << ", but it was " << actualValue;});
+            actual().Name() == expected,
+            expected,
+            actual().Name(),
+            "to have name");
     }
 };
 

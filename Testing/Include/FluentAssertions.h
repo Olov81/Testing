@@ -88,6 +88,20 @@ protected:
     {
         return _context.actualName();
     }
+
+    template<class TExpected>
+    void assert(bool condition, const TExpected& expected, const char* requirement) const
+    {
+        return assert(condition, expected, actual(), requirement);
+    }
+    
+    template<class TExpected, class T>
+    void assert(bool condition, const TExpected& expected, const T& actual, const char* requirement) const
+    {
+        return assert(
+            condition,
+            [&](auto& s){s << "Expected " << actualName() << " to " << " " << requirement << " " << expected << ", but was " << actual;});    
+    }
     
     void assert(bool condition, const std::function<void(std::stringstream&)>& appendMessage) const
     {
@@ -122,17 +136,13 @@ public:
     template<class TExpected> requires Equatable<TActual, TExpected>
     void equals(const TExpected& expected)
     {
-        assert(
-            actual() == expected,
-            [&](auto& s){ s << "Expected " << actualName() << " to be " << expected << ", but was " << actual();});
+        assert(actual() == expected, expected, "to be");
     }
 
     template<class TExpected> requires Greater<TActual, TExpected>
     void isGreaterThan(const TExpected& expected)
     {
-        assert(
-            actual() > expected,
-            [&](auto& s){ s << "Expected " << actualName() << " to be greater than " << expected << ", but was " << actual();});
+        assert(actual() > expected, expected,"to be greater than");
     }
 };
 
