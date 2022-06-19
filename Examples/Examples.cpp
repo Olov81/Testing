@@ -7,6 +7,45 @@ int main()
     return TestSuite::Instance()->RunTests() ? 0 : -1;
 }
 
+class MyClass
+{
+public:
+    
+    MyClass(const char* name)
+        : _name(name)
+    {
+        
+    }
+
+    std::string Name() const
+    {
+        return _name;
+    }
+
+private:
+    
+    std::string _name;
+};
+
+template<>
+class Assertions<MyClass> : public AssertionsBase<MyClass>
+{
+public:
+
+    Assertions(const AssertionContext<MyClass>& context)
+        :AssertionsBase<MyClass>(context)
+    {
+    }
+    
+    void hasName(const char* expected) const
+    {
+        auto actualValue = actual().Name();
+        assert(
+            actualValue == expected,
+            [&](auto& s){s << "Expected " << actualName() << " to have name " << expected << ", but it was " << actualValue;});
+    }
+};
+
 TEST(success)
 {
 }
@@ -45,4 +84,11 @@ TEST(greater_than)
     constexpr double number = 0.5;
 
     ASSERT_THAT(number).isGreaterThan(10);
+}
+
+TEST(custom_class)
+{
+    MyClass x("Orvar");
+
+    ASSERT_THAT(x).hasName("Bosse");
 }

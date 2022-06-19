@@ -62,8 +62,7 @@ private:
 inline void fail(long line, const char* file,  const std::function<void(std::stringstream&)>& appendMessage)
 {
     std::stringstream s;
-    s << std::endl
-      << file << "(" << line << "):" << std::endl;
+    s << file << "(" << line << "):" << std::endl;
     appendMessage(s);
     throw std::exception(s.str().c_str());
 }

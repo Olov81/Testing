@@ -77,8 +77,6 @@ bool TestSuite::RunTests() const
 	const auto duration = end - start;
 	
 	std::cout
-		<< std::endl
-		<< std::endl
 		<< "====== Test Summary ======" << std::endl
 		<< "Passed: " << passed << std::endl
 		<< "Failed: " << failed << std::endl
