@@ -19,8 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Assertions\AssertionContext.h" />
+    <ClInclude Include="Include\Assertions\AssertionsBase.h" />
+    <ClInclude Include="Include\Assertions\Concepts.h" />
+    <ClInclude Include="Include\Assertions\Fail.h" />
+    <ClInclude Include="Include\Assertions\Assert.h" />
     <ClInclude Include="Include\Test.h" />
-    <ClInclude Include="Include\FluentAssertions.h" />
     <ClInclude Include="Include\TestSuite.h" />
   </ItemGroup>
   <ItemGroup>

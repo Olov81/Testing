@@ -1,4 +1,4 @@
-#include "FluentAssertions.h"
+#include "Assertions/Assert.h"
 #include "Test.h"
 #include "TestSuite.h"
 
@@ -91,6 +91,14 @@ TEST(decimal_numbers)
 {
     double value = 5.5;
     ASSERT_THAT(value).isCloseTo(6, 1e-3);
+}
+
+TEST(vectors)
+{
+    const std::vector apa = {1.0, 2.0, 3.0};
+    const std::list expected = {1.0, 2.0, 3.0, 4.0};
+    
+    ASSERT_THAT(apa).areAllEqualTo(expected);
 }
 
 TEST(custom_class)
